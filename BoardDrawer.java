@@ -6,10 +6,11 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
 
-
 public class BoardDrawer {
 
-	public static BufferedImage drawBoard(HashMap<Integer, Tile> tiles, int s) {
+	public static BufferedImage drawBoard(Board b, int s) {
+		
+		HashMap<Integer, Tile> tiles = b.getTiles();
 		
 		//SETUP IMAGE
 		int height = 10 * s;
@@ -53,18 +54,18 @@ public class BoardDrawer {
 			
 			g.fillPolygon(xpoints, ypoints, 6);
 			g.setColor(Color.BLACK);
-			g.setFont(new Font(Font.SERIF, Font.PLAIN, s/2));
-			int c = tiles.get(id).getChit();
+			g.setFont(new Font(Font.SERIF, Font.PLAIN, s/3));
+			int c = tiles.get(id).getChit().value();
 			if (c > 9)
-				g.drawString("" + c, x - s/4, y + s/8);
+				g.drawString(tiles.get(id).getChit().name() + "-" + c, x - s/4, y + s/8);
 			else if (c > 0) {
 				if (c == 6 || c == 8) {
 					g.setColor(Color.RED);
-					g.drawString("" + c, x - s/8, y + s/8);
+					g.drawString(tiles.get(id).getChit().name() + "-" + c, x - s/4, y + s/8);
 					g.setColor(Color.BLACK);
 				}
 				else
-					g.drawString("" + c, x - s/8, y + s/8);
+					g.drawString(tiles.get(id).getChit().name() + "-" + c, x - s/4, y + s/8);
 			}
 			g.setStroke(new BasicStroke(5));
             g.drawPolygon(xpoints, ypoints, 6);

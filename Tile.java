@@ -1,16 +1,15 @@
 import java.util.ArrayList;
 
-
 public class Tile {
 
 	//Map Structure
-	private int chit;
+	private Chit chit;
 	private String terrain;
 	private ArrayList<Vertex> v;
 	private boolean robber;
 	
 	//Constructor
-	public Tile(int c, String t) {
+	public Tile(Chit c, String t) {
 		chit = c;
 		terrain = t;
 		v = new ArrayList<Vertex>();
@@ -38,10 +37,18 @@ public class Tile {
 		return terrain;
 	}
 	
-	public int getChit() {
+	public Chit getChit() {
 		return chit;
 	}
 	
+	public int[] vertexIds() {
+		int[] vs = new int[6];
+		for(int i = 0; i < 6; i++)
+			vs[i] = v.get(i).getID();
+		return vs;
+	}
+	
+	@Override
 	public String toString() {
 		return terrain + "(" + chit + ")";
 	}

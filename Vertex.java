@@ -6,10 +6,12 @@ public class Vertex {
 
 	//Map Structure
 	private int id;
-	private HashMap<Integer, Vertex> adj;
+//	private HashMap<Integer, Vertex> adj;
+	private ArrayList<Vertex> adj;
 	private ArrayList<Tile> tiles;
 	private HashMap<Vertex, Edge> edges;
 	private Port port;
+	private boolean city;
 	
 	//Player
 	private Player p;
@@ -19,10 +21,28 @@ public class Vertex {
 		id = i;
 		port = null;
 		p = new Player();
-		adj = new HashMap<Integer, Vertex>();
+//		adj = new HashMap<Integer, Vertex>();
+		adj = new ArrayList<Vertex>();
 		tiles = new ArrayList<Tile>();
 		edges = new HashMap<Vertex, Edge>();
-		
+		city = false;
+	}
+	
+	//Gameplay
+	public boolean isCity() {
+		return city;
+	}
+	
+	public void cityUp() {
+		city = true;
+	}
+	
+	public void builtBy(Player builder) {
+		p = builder;
+	}
+	
+	public Player owner() {
+		return p;
 	}
 	
 	//Structure
@@ -32,8 +52,10 @@ public class Vertex {
 	
 	public static void connect(Vertex v1, Vertex v2) {
 		Edge u = new Edge(v1, v2);
-		v1.adj.put(v2.getID(), v2);
-		v2.adj.put(v1.getID(), v1);
+//		v1.adj.put(v2.getID(), v2);
+//		v2.adj.put(v1.getID(), v1);
+		v1.adj.add(v2);
+		v2.adj.add(v1);
 		v1.edges.put(v2, u);
 		v2.edges.put(v1, u);
 	}
@@ -43,7 +65,23 @@ public class Vertex {
 		return this.id;
 	}
 	
-	public String edges() {
+	public ArrayList<Vertex> getAdjacent() {
+		return adj;
+	}
+	
+	public ArrayList<Edge> edges() {
+		ArrayList<Edge> es = new ArrayList<Edge>();
+		for(Vertex v : adj) {
+			es.add(edges.get(v));
+		}
+		return es;
+	}
+	
+	public Edge getConnecting(Vertex v) {
+		return edges.get(v);
+	}
+	
+	public String edgeString() {
 		String s = "Edges of vertex " + id;
 		Iterator<Vertex> es = edges.keySet().iterator();
 		while (es.hasNext()) {
@@ -59,7 +97,7 @@ public class Vertex {
 		s += "\nRESOURCES:";
 		for(Tile t : tiles)
 			s += "\n\t" + t.toString();
-		s += "\n" + edges();
+		s += "\n" + edgeString();
 		return s;
 	}
 	
