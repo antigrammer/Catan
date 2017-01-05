@@ -7,13 +7,15 @@ public class Tile {
 	private String terrain;
 	private ArrayList<Vertex> v;
 	private boolean robber;
+	private int id;
 	
 	//Constructor
-	public Tile(Chit c, String t) {
+	public Tile(Chit c, String t, int i) {
 		chit = c;
 		terrain = t;
 		v = new ArrayList<Vertex>();
 		robber = false;
+		id = i;
 	}
 	
 	//Structure
@@ -46,6 +48,10 @@ public class Tile {
 		for(int i = 0; i < 6; i++)
 			vs[i] = v.get(i).getID();
 		return vs;
+	}
+	
+	public int getID() {
+		return id;
 	}
 	
 	@Override

@@ -8,9 +8,10 @@ import java.util.Iterator;
 
 public class BoardDrawer {
 
-	public static BufferedImage drawBoard(Board b, int s) {
+	public static BufferedImage drawBoard(Board b) {
 		
 		HashMap<Integer, Tile> tiles = b.getTiles();
+		int s = b.getSize();
 		
 		//SETUP IMAGE
 		int height = 10 * s;
@@ -67,11 +68,11 @@ public class BoardDrawer {
 				else
 					g.drawString(tiles.get(id).getChit().name() + "-" + c, x - s/4, y + s/8);
 			}
-			g.setStroke(new BasicStroke(5));
+			g.setStroke(new BasicStroke(s/10));
             g.drawPolygon(xpoints, ypoints, 6);
             if (tiles.get(id).hasRobber()) {
             	g.setColor(Color.RED);
-    			g.setStroke(new BasicStroke(2));
+    			g.setStroke(new BasicStroke(s/30));
                 g.drawLine(xpoints[5], ypoints[5], xpoints[2], ypoints[2]);
                 g.drawLine(xpoints[1], ypoints[1], xpoints[4], ypoints[4]);
             }
@@ -80,6 +81,81 @@ public class BoardDrawer {
 		
 		return board;
 		
+	}
+	
+	public static BufferedImage drawSettlement(BufferedImage image, int id, int s, Player p) {
+		
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		int[] directions = directionalVectors(id);
+		double[] delta = new double[2];
+		delta[0] = (double) directions[0] - (double) directions[1]/2 - (double) directions[2]/2;
+		delta[1] = (double) Math.sqrt(3) * (-directions[1])/2 + (double) Math.sqrt(3) * (directions[2])/2;	
+		int dx = (int) ((double) delta[1] * s);
+		int dy = (int) ((double) delta[0] * s);
+		int x = image.getWidth()/2 + dx;
+		int y = image.getHeight()/2 + dy;
+		switch(p.id()) {
+			case 1: g.setColor(Color.RED); break;
+			case 2: g.setColor(Color.BLUE); break;
+			case 3: g.setColor(Color.WHITE); break;
+			case 4: g.setColor(Color.ORANGE);
+		}
+		g.fillOval(x - s/5, y - s/5, 2*s/5, 2*s/5);
+		return image;
+
+	}
+	
+	public static BufferedImage drawCity(BufferedImage image, int id, int s, Player p) {
+		
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		int[] directions = directionalVectors(id);
+		double[] delta = new double[2];
+		delta[0] = (double) directions[0] - (double) directions[1]/2 - (double) directions[2]/2;
+		delta[1] = (double) Math.sqrt(3) * (-directions[1])/2 + (double) Math.sqrt(3) * (directions[2])/2;	
+		int dx = (int) ((double) delta[1] * s);
+		int dy = (int) ((double) delta[0] * s);
+		int x = image.getWidth()/2 + dx;
+		int y = image.getHeight()/2 + dy;
+		switch(p.id()) {
+			case 1: g.setColor(Color.RED); break;
+			case 2: g.setColor(Color.BLUE); break;
+			case 3: g.setColor(Color.WHITE); break;
+			case 4: g.setColor(Color.ORANGE);
+		}
+		g.fillRect(x - s/5, y - s/5, 2*s/5, 2*s/5);
+		return image;
+
+	}
+
+	public static BufferedImage drawRoad(BufferedImage image, int id1, int id2, int s, Player p) {
+	
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		int[] directions1 = directionalVectors(id1);
+		int[] directions2 = directionalVectors(id2);
+		double[] delta1 = new double[2];
+		delta1[0] = (double) directions1[0] - (double) directions1[1]/2 - (double) directions1[2]/2;
+		delta1[1] = (double) Math.sqrt(3) * (-directions1[1])/2 + (double) Math.sqrt(3) * (directions1[2])/2;	
+		double[] delta2 = new double[2];
+		delta2[0] = (double) directions2[0] - (double) directions2[1]/2 - (double) directions2[2]/2;
+		delta2[1] = (double) Math.sqrt(3) * (-directions2[1])/2 + (double) Math.sqrt(3) * (directions2[2])/2;	
+		int dx1 = (int) ((double) delta1[1] * s);
+		int dy1 = (int) ((double) delta1[0] * s);
+		int dx2 = (int) ((double) delta2[1] * s);
+		int dy2 = (int) ((double) delta2[0] * s);
+		int x1 = image.getWidth()/2 + dx1;
+		int y1 = image.getHeight()/2 + dy1;
+		int x2 = image.getWidth()/2 + dx2;
+		int y2 = image.getHeight()/2 + dy2;
+		switch(p.id()) {
+			case 1: g.setColor(Color.RED); break;
+			case 2: g.setColor(Color.BLUE); break;
+			case 3: g.setColor(Color.WHITE); break;
+			case 4: g.setColor(Color.ORANGE);
+		}
+		g.setStroke(new BasicStroke(s/8));
+		g.drawLine(x1, y1, x2, y2);
+		return image;
+	
 	}
 	
 	public static int[] directionalVectors(int id) {

@@ -62,7 +62,7 @@ public class Vertex {
 	
 	//Identity
 	public int getID() {
-		return this.id;
+		return id;
 	}
 	
 	public ArrayList<Vertex> getAdjacent() {

@@ -17,10 +17,15 @@ public class Board {
 	private HashMap<Integer, Vertex> verticies;
 	private HashMap<Integer, Tile> tiles;
 	private BufferedImage image;
+	private int size;
+	private String fileName;
 	
 	//Constructor
-	public Board(boolean standard) {
+	public Board(boolean standard, String fn, int s) {
 
+		fileName = fn;
+		size = s;
+		
 		//TERRAIN
 		ArrayList<String> terrain = new ArrayList<String>(19);
 		terrain.add("hill"); terrain.add("hill"); terrain.add("hill");
@@ -69,12 +74,12 @@ public class Board {
 		for(Integer i : tileID) {
 			String terr = terrain.remove(0);
 			if(terr.equals("desert")) {
-				Tile des = new Tile(new Chit(0, ' '), terr);
+				Tile des = new Tile(new Chit(0, ' '), terr, i);
 				des.setRobber(true);
 				tiles.put(i, des);
 			}
 			else
-				tiles.put(i, new Tile(new Chit(chitValues.remove(0), name++), terr));
+				tiles.put(i, new Tile(new Chit(chitValues.remove(0), name++), terr, i));
 		}
 		
 //		BufferedImage image = BoardDrawer.drawBoard(tiles, 60);
@@ -96,31 +101,43 @@ public class Board {
 			for(int rot = 0; rot < 6; rot++)
 				Vertex.connect(verticies.get(id + points[rot]), verticies.get(id + points[rot+1]));
 		}
-		updateImage();
+		initializeBoard();
 	}
 	
-	//Gameplay
-	public void updateImage() {
-		image = BoardDrawer.drawBoard(this, 60);
+	//Gameplay	
+	public void initializeBoard() {
+		image = BoardDrawer.drawBoard(this);
+		try {
+			writeImage();
+		} catch (IOException e) {}
 	}
 	
 	public void buildSettlement(int id, Player p) {
 		p.buildSettlement(verticies.get(id));		//player pays cost, registers new settlement
 		verticies.get(id).builtBy(p);				//vertex updated to be settled by Player p
-		updateImage();
+		image = BoardDrawer.drawSettlement(image, id, size, p);
+		try {
+			writeImage();
+		} catch (IOException e) {}
 	}
 	
 	public void buildCity(int id) {
 		verticies.get(id).owner().buildCity(verticies.get(id));	//player pays cost, registers settlement --> city
 		verticies.get(id).cityUp();								//vertex updated to city
-		updateImage();
+		image = BoardDrawer.drawCity(image, id, size, verticies.get(id).owner());
+		try {
+			writeImage();
+		} catch (IOException e) {}
 	}
 	
 	public void buildRoad(int id1, int id2, Player p) {
 		Edge e = verticies.get(id1).getConnecting(verticies.get(id2));
 		p.buildRoad(e);													//player pays costs, calculates longest road
 		e.builtBy(p);
-		updateImage();
+		image = BoardDrawer.drawRoad(image, id1, id2, size, p);
+		try {
+			writeImage();
+		} catch (IOException ex) {}
 	}
 	
 	//Identify
@@ -132,11 +149,19 @@ public class Board {
 		return tiles;
 	}
 	
+	public int getSize() {
+		return size;
+	}
+	
 	public BufferedImage getImage() {
 		return image;
 	}
 	
-	public void writeImage(String fileName) throws IOException {
+	public void setFileName(String fn) {
+		fileName = fn;
+	}
+	
+	public void writeImage() throws IOException {
 		File boardPicture = new File(fileName + ".png");
 		ImageIO.write(image, "png", boardPicture);
 	}
