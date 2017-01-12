@@ -19,12 +19,14 @@ public class Board {
 	private BufferedImage image;
 	private int size;
 	private String fileName;
+	private boolean visual;
 	
 	//Constructor
-	public Board(boolean standard, String fn, int s) {
+	public Board(boolean standard, String fn, int s, boolean v) {
 
 		fileName = fn;
 		size = s;
+		visual = v;
 		
 		//TERRAIN
 		ArrayList<String> terrain = new ArrayList<String>(19);
@@ -101,7 +103,8 @@ public class Board {
 			for(int rot = 0; rot < 6; rot++)
 				Vertex.connect(verticies.get(id + points[rot]), verticies.get(id + points[rot+1]));
 		}
-		initializeBoard();
+		if (visual)
+			initializeBoard();
 	}
 	
 	//Gameplay	
@@ -115,29 +118,35 @@ public class Board {
 	public void buildSettlement(int id, Player p) {
 		p.buildSettlement(verticies.get(id));		//player pays cost, registers new settlement
 		verticies.get(id).builtBy(p);				//vertex updated to be settled by Player p
-		image = BoardDrawer.drawSettlement(image, id, size, p);
-		try {
-			writeImage();
-		} catch (IOException e) {}
+		if (visual) {
+			image = BoardDrawer.drawSettlement(image, id, size, p);
+			try {
+				writeImage();
+			} catch (IOException e) {}
+		}
 	}
 	
 	public void buildCity(int id) {
 		verticies.get(id).owner().buildCity(verticies.get(id));	//player pays cost, registers settlement --> city
 		verticies.get(id).cityUp();								//vertex updated to city
 		image = BoardDrawer.drawCity(image, id, size, verticies.get(id).owner());
-		try {
-			writeImage();
-		} catch (IOException e) {}
+		if(visual) {	
+			try {
+				writeImage();
+			} catch (IOException e) {}
+		}
 	}
 	
 	public void buildRoad(int id1, int id2, Player p) {
 		Edge e = verticies.get(id1).getConnecting(verticies.get(id2));
 		p.buildRoad(e);													//player pays costs, calculates longest road
 		e.builtBy(p);
-		image = BoardDrawer.drawRoad(image, id1, id2, size, p);
-		try {
-			writeImage();
-		} catch (IOException ex) {}
+		if(visual) {
+			image = BoardDrawer.drawRoad(image, id1, id2, size, p);
+			try {
+				writeImage();
+			} catch (IOException ex) {}
+		}
 	}
 	
 	//Identify

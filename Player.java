@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
@@ -5,6 +6,7 @@ public class Player {
 
 	//Identity
 	private int id;
+	private Color color;
 	
 	//Game State
 	private int vp;
@@ -32,6 +34,14 @@ public class Player {
 		resources = new int[5];
 		developmentCards = new ArrayList<DevCard>();
 		initialize();
+		switch(i) {
+		case 1: color = Color.BLUE; break;
+		case 2: color = Color.RED; break;
+		case 3: color = Color.WHITE; break;
+		case 4: color = Color.ORANGE; break;
+		default: color = Color.BLACK;
+		}
+		
 	}
 	
 	public void initialize() {
@@ -108,6 +118,10 @@ public class Player {
 	
 	public String status() {
 		return this.toString() + "\n" + resources() + "\n" + materials();
+	}
+	
+	public Color getColor() {
+		return color;
 	}
 	
 	@Override

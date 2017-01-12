@@ -94,12 +94,7 @@ public class BoardDrawer {
 		int dy = (int) ((double) delta[0] * s);
 		int x = image.getWidth()/2 + dx;
 		int y = image.getHeight()/2 + dy;
-		switch(p.id()) {
-			case 1: g.setColor(Color.RED); break;
-			case 2: g.setColor(Color.BLUE); break;
-			case 3: g.setColor(Color.WHITE); break;
-			case 4: g.setColor(Color.ORANGE);
-		}
+		g.setColor(p.getColor());
 		g.fillOval(x - s/5, y - s/5, 2*s/5, 2*s/5);
 		return image;
 
@@ -116,12 +111,7 @@ public class BoardDrawer {
 		int dy = (int) ((double) delta[0] * s);
 		int x = image.getWidth()/2 + dx;
 		int y = image.getHeight()/2 + dy;
-		switch(p.id()) {
-			case 1: g.setColor(Color.RED); break;
-			case 2: g.setColor(Color.BLUE); break;
-			case 3: g.setColor(Color.WHITE); break;
-			case 4: g.setColor(Color.ORANGE);
-		}
+		g.setColor(p.getColor());
 		g.fillRect(x - s/5, y - s/5, 2*s/5, 2*s/5);
 		return image;
 
@@ -146,12 +136,7 @@ public class BoardDrawer {
 		int y1 = image.getHeight()/2 + dy1;
 		int x2 = image.getWidth()/2 + dx2;
 		int y2 = image.getHeight()/2 + dy2;
-		switch(p.id()) {
-			case 1: g.setColor(Color.RED); break;
-			case 2: g.setColor(Color.BLUE); break;
-			case 3: g.setColor(Color.WHITE); break;
-			case 4: g.setColor(Color.ORANGE);
-		}
+		g.setColor(p.getColor());
 		g.setStroke(new BasicStroke(s/8));
 		g.drawLine(x1, y1, x2, y2);
 		return image;
