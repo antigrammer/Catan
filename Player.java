@@ -41,7 +41,15 @@ public class Player {
 		case 4: color = Color.ORANGE; break;
 		default: color = Color.BLACK;
 		}
-		
+	}
+	
+	public Player(int i, Color c) {
+		id = i;
+		vp = 0;
+		resources = new int[5];
+		developmentCards = new ArrayList<DevCard>();
+		initialize();
+		color = c;
 	}
 	
 	public void initialize() {
@@ -54,9 +62,22 @@ public class Player {
 	//Gameplay
 	public void turn() { 	}
 	public String ask(String question, String prompt) {return null;}
+	public boolean isHuman() {
+		return false;
+	}
 	
-	public void buildSettlement(Vertex v) {
+	public void getRich() {
+		for(int i = 0; i < 5; i++)
+			resources[i] += 5;
+	}
+	
+	public void buildSettlement(Vertex v) throws Exception {
 		settlements.put(v.getID(), v);		//adding settlement
+		if(resources[0] < 1 || resources[1] < 1 || resources[2] < 1 ||
+				resources[3] < 1 || resources[4] < 1)
+			throw new Exception("build error: settlement cost too high");
+		if(materials[1] < 1)
+			throw new Exception("build error: no more settlement pieces");
 		resources[0] -= 1;					//building costs
 		resources[1] -= 1;
 		resources[3] -= 1;
@@ -65,7 +86,11 @@ public class Player {
 		vp += 1;							//gain a vp
 	}
 	
-	public void buildCity(Vertex v) {
+	public void buildCity(Vertex v) throws Exception {
+		if(resources[2] < 3 || resources[3] < 2)
+			throw new Exception("build error: city cost too high");
+		if(materials[2] < 1)
+			throw new Exception("build error: no more city pieces");
 		settlements.remove(v.getID()); 	//replacing settlement with city
 		cities.put(v.getID(), v);
 		resources[2] -= 3;
@@ -75,7 +100,11 @@ public class Player {
 		vp += 1;						//gain a vp
 	}
 	
-	public void buildRoad(Edge e) {
+	public void buildRoad(Edge e) throws Exception {
+		if(resources[0] < 1 || resources[4] < 1)
+			throw new Exception("build error: road cost too high");
+		if(materials[0] < 1)
+			throw new Exception("build error: no more road pieces");
 		resources[0] -= 1;					//resource cost
 		resources[4] -= 1;
 		materials[0] -= 1;					//material cost

@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,8 +24,8 @@ public class Engine {
 	static boolean track = false;			//whether or not to track picture
 	private static String picture = "";		//file of game picture
 	
-	static ArrayList<Player> players;		//players
-	static Board board;						//board
+	static ArrayList<Player> players = new ArrayList<Player>();	//players
+	static Board board;											//board
 	
 	public static void main(String[] args) throws IOException {
 
@@ -339,43 +340,25 @@ public class Engine {
 		
 /////////////////////////////////////////////////////////////////////////////////
 		
-		System.exit(0);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		//COLOR OF PLAYERS
-		System.out.println("Colors are currently fixed as follows:");
-		System.out.println("Player 1 = blue\nPlayer 2 = red\nPlayer 3 = white\nPlayer 4 = orange");
-		
-		
-		//GENERATING PLAYERS
-		int[] rolls = new int[numPlayers];
+		//GENERATING PLAYERS AND ORDER (DIRECT ORDER INPUT)
+		players = new ArrayList<Player>();
+		int[] order = new int[numPlayers]; //index i = i+1th place, filled with id of player in that spot
+		//TESTING
 		if(!gameType) {
 			for(int j = 0; j < numHumans; j++) {
 				do {
-					System.out.println("P" + (j+1) + "'s starting roll: ");
+					System.out.println("P" + (j+1) + "'s order: ");
 					while(!in.hasNextLine()) {}
 					try {
 						int i = Integer.parseInt(in.nextLine());
-						if (i > 12)
-							System.out.println("error: not a valid roll");
-						else if (i < 2)
-							System.out.println("error: not a valid roll");
+						if (i > numPlayers)
+							System.out.println("error: not a valid turn order");
+						else if (i < 1)
+							System.out.println("error: not a valid turn order");
+						else if (order[i-1] != 0)
+							System.out.println("error: that spot has already been taken");
 						else {
-							rolls[j] = i;
+							order[i-1] = j+1;
 							temp = true;
 						}
 					} catch (NumberFormatException e) {
@@ -385,18 +368,21 @@ public class Engine {
 				while (!temp);
 				temp = false;
 			}
+			
 			for(int j = numHumans; j < numPlayers; j++) {
 				do {
-					System.out.println("COM" + (j+1-numHumans) + "'s starting roll: ");
+					System.out.println("COM" + (j+1-numHumans) + "'s order: ");
 					while(!in.hasNextLine()) {}
 					try {
 						int i = Integer.parseInt(in.nextLine());
-						if (i > 12)
-							System.out.println("error: not a valid roll");
-						else if (i < 2)
-							System.out.println("error: not a valid roll");
+						if (i > numPlayers)
+							System.out.println("error: not a valid turn order");
+						else if (i < 1)
+							System.out.println("error: not a valid turn order");
+						else if (order[i-1] != 0)
+							System.out.println("error: that spot has already been taken");
 						else {
-							rolls[j] = i;
+							order[i-1] = -(j - numHumans + 1); //minus means computer
 							temp = true;
 						}
 					} catch (NumberFormatException e) {
@@ -406,128 +392,203 @@ public class Engine {
 				while (!temp);
 				temp = false;
 			}
-			int maxRoll = 0;
-			int maxP = 0;
-			for(int i = 0; i < numPlayers; i++) {
-				
+			
+			boolean[] colors = new boolean[4]; //blue red white orange
+			for (int i = 0; i < numPlayers; i++) {
+				int playerNumber = order[i];
+				boolean isHuman = playerNumber > 0;
+				do {
+					if (isHuman)
+						System.out.println("P" + (playerNumber) + "'s color (lower case): ");
+					else {
+						playerNumber *= -1;
+						System.out.println("COM" + (-playerNumber) + "'s color (lower case): " );
+					}
+					while(!in.hasNextLine()) {}
+					String s = in.nextLine();
+					switch(s) {
+						case "blue":
+							if(colors[0])
+								System.out.println("that color has already been chosen");
+							else {
+								if(isHuman)
+									players.add(new Human(playerNumber, Color.BLUE));
+								else
+									players.add(new Computer(playerNumber, Color.BLUE, stratFiles[playerNumber-1]));
+								colors[0] = true;
+								temp = true;
+							}
+							break;
+						case "red":
+							if(colors[1])
+								System.out.println("that color has already been chosen");
+							else {
+								if(isHuman)
+									players.add(new Human(playerNumber, Color.RED));
+								else
+									players.add(new Computer(playerNumber, Color.RED, stratFiles[playerNumber-1]));
+								colors[1] = true;
+								temp = true;
+							}
+							break;
+						case "white":
+							if(colors[2])
+								System.out.println("that color has already been chosen");
+							else {
+								if(isHuman)
+									players.add(new Human(playerNumber, Color.WHITE));
+								else
+									players.add(new Computer(playerNumber, Color.WHITE, stratFiles[playerNumber-1]));
+								colors[2] = true;
+								temp = true;
+							}
+							break;
+						case "orange":
+							if(colors[3])
+								System.out.println("that color has already been chosen");
+							else {
+								if(isHuman)
+									players.add(new Human(playerNumber, Color.ORANGE));
+								else
+									players.add(new Computer(playerNumber, Color.ORANGE, stratFiles[playerNumber-1]));
+								colors[3] = true;
+								temp = true;
+							}
+							break;
+						default: System.out.println("error: not a valid response");	
+					}
+				}
+				while (!temp);
+				temp = false;
+			}
+			
+		}			
+		//SIMULATION
+		else {
+			for(int i = 0; i < numCPU; i++) {
+				players.add(new Computer(i+1, stratFiles[i]));
 			}
 		}
 		
-		
-		
-		
-		
-		
-		
-		
 		for(int i = 0; i < numPlayers; i++) {
-			System.out.println(rolls[i]);
-		}
-		System.exit(0);
+			System.out.println(players.get(i));
+		}		
 		
-		////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 		
 		final int size = 60;
-		Board b = new Board(true, "board", 60, true);
-		Player player = new Player(1);
+		Board b = new Board(true, "board", size, track);
 		TreeMap<Character, Tile> tName = new TreeMap<Character, Tile>();
 		HashMap<Integer, Tile> tID = b.getTiles();
 		for(Integer id : tID.keySet())
 			tName.put(tID.get(id).getChit().name(), tID.get(id));
-		BoardDrawer.drawBoard(b);
 		
+		int playerIndex = 0;
+		Player player = players.get(playerIndex);
 		while (true) {
 			System.out.print(player.id() + "~: ");
 			while(!in.hasNextLine()) {}
 			String[] input = in.nextLine().split(" ");
 			switch(input[0]) {
-			case "exit": 
-				System.out.println("closing...");
-				in.close();
-				System.exit(0);
-				break;
-			case "turn": 
-				int tempid = (player.id()+1)%4;
-				if(tempid == 0)
-					tempid = 4;
-				System.out.println("it is now " + tempid + "'s turn");
-				player = new Player(tempid);
-				break;	
-			case "build":
-				if(input.length == 1) {
-					System.out.println("argument needed");
+				//System questions/answers
+				case "exit": 
+					System.out.println("closing...");
+					in.close();
+					System.exit(0);
 					break;
-				}
-				switch(input[1]) {
-				case "settlement": 
-					if(input.length != 3) {
-						System.out.println("argument needed of the form <TILE> <VERTEX>");
+				case "rich": 
+					player.getRich();
+					break;
+				case "status": 
+					for (Player pl : players)
+						System.out.println(pl.status());
+					break;
+					
+				//Gameplay actions
+				case "turn": 
+					playerIndex = (playerIndex+1)%4;
+					player = players.get(playerIndex);
+					if(players.get(playerIndex).isHuman())
+						System.out.println("it is now P" + player.id() + "'s turn");
+					else
+						System.out.println("it is now COM" + player.id() + "'s turn");
+					break;
+					
+				case "build":
+					if(input.length == 1) {
+						System.out.println("syntax: argument needed");
 						break;
 					}
-					try {
-						int id = parseDir(input[2], tName);
-						System.out.println("placing settlement on: " + id);
-						b.buildSettlement(id, player);
-					} catch (Exception e) {
-						System.out.println("vertex: " + e.getMessage());
-					}
-					break;
-				case "city": 
-					if(input.length != 3) {
-						System.out.println("argument needed of the form <TILE> <VERTEX>");
+					switch(input[1]) {
+					case "settlement": 
+						if(input.length != 3) {
+							System.out.println("syntax: argument needed of the form <TILE> <VERTEX>");
+							break;
+						}
+						try {
+							int id = parseDir(input[2], tName);
+							b.buildSettlement(id, player);
+							System.out.println("placing settlement on: " + id);
+						} catch (Exception e) {
+							System.out.println("(vertex) " + e.getMessage());
+						}
 						break;
-					}
-					try {
-						int id = parseDir(input[2], tName);
-						Player o = b.getVerticies().get(id).owner();
-						if (!o.equals(player)) {
-							System.out.println("city: you cannot upgrade " + o + "'s city");
+					case "city": 
+						if(input.length != 3) {
+							System.out.println("syntax: argument needed of the form <TILE> <VERTEX>");
+							break;
+						}
+						try {
+							int id = parseDir(input[2], tName);
+							b.buildCity(id, player);
+							System.out.println("upgrading to city: " + id);
+						} catch (Exception e) {
+							System.out.println("(vertex) " + e.getMessage());
+						}
+						break;
+					case "road":
+						if(input.length != 4) {
+							System.out.println("syntax: argument needed of the form <TILE> <VERTEX1> <VERTEX2>");
+							break;
 						}
 						else {
-							System.out.println("upgrading to city: " + id);
-							b.buildCity(id);	
+							boolean ok = true;
+							int id1 = 0;
+							int id2 = 0;
+							try {
+								id1 = parseDir(input[2], tName);
+							} catch (Exception e) {
+								ok = false;
+								System.out.println("(vertex1) " + e.getMessage());
+							}
+							try {
+								id2 = parseDir(input[3], tName);
+							} catch (Exception e) {
+								ok = false;
+								System.out.println("(vertex2) " + e.getMessage());
+							}
+							if(ok) {
+								try {
+									b.buildRoad(id1, id2, player);
+									System.out.println("building road from " + id1 + " to " + id2);
+								} catch (Exception e) {
+									System.out.println("(road) " + e.getMessage());
+								}
+							}
 						}
-					} catch (Exception e) {
-						System.out.println("vertex: " + e.getMessage());
-					}
-					break;
-				case "road":
-					if(input.length != 4) {
-						System.out.println("argument needed of the form <TILE> <VERTEX1> <VERTEX2>");
 						break;
+					default:
+						System.out.println("syntax: second word must be a valid building type");
 					}
-					else {
-						boolean ok = true;
-						int id1 = 0;
-						int id2 = 0;
-						try {
-							id1 = parseDir(input[2], tName);
-						} catch (Exception e) {
-							ok = false;
-							System.out.println("vertex1: " + e.getMessage());
-						}
-						try {
-							id2 = parseDir(input[3], tName);
-						} catch (Exception e) {
-							ok = false;
-							System.out.println("vertex2: " + e.getMessage());
-						}
-						if(true) {
-							System.out.println("building road from " + id1 + " to " + id2);
-							b.buildRoad(id1, id2, player);
-						}
-					}
-					break;
-				}
 				break;
 			default:
-				System.out.println("invalid statement, could not parse");
+				System.out.println("syntax: invalid statement, could not parse");
 			}
 		}
 		
 	}	
 	
-	//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 	
 	public static boolean isLegalConfig(String fileName) {
 		
@@ -548,59 +609,79 @@ public class Engine {
 				case "testing":
 					break;
 				default:
+					in.close();
 					return false;
 			}
 		}
-		else
+		else {
+			in.close();
 			return false;
+		}
 		//READING NUMBER OF P/H/C
 		if(in.hasNextLine()) {
 			try {
 				i = Integer.parseInt(in.nextLine());
 			} catch (NumberFormatException e) {
+				in.close();
 				return false;
 			}
-			if(i < 1 || i > 4)
+			if(i < 1 || i > 4) {
+				in.close();
 				return false;
+			}
 			else
 				numPlayers = i;
 		}
-		else
+		else {
+			in.close();
 			return false;
+		}
 		if(in.hasNextLine()) {
 			try {
 				i = Integer.parseInt(in.nextLine());
 			} catch (NumberFormatException e) {
+				in.close();
 				return false;
 			}
-			if(i < 0 || i > numPlayers)
+			if(i < 0 || i > numPlayers) {
+				in.close();
 				return false;
+			}
 			else
 				numHumans = i;
 		}
-		else
+		else {
+			in.close();
 			return false;
+		}
 		if(in.hasNextLine()) {
 			try {
 				i = Integer.parseInt(in.nextLine());
 			} catch (NumberFormatException e) {
+				in.close();
 				return false;
 			}
-			if(numPlayers - numHumans != i)
+			if(numPlayers - numHumans != i) {
+				in.close();
 				return false;
+			}
 			else
 				numCPU = i;
 		}
-		else
+		else {
+			in.close();
 			return false;
+		}
 		//READING CPU STRATEGIES
 		stratFiles = new String[numCPU];
 		for(i = 0; i < numCPU; i++) {
 			if(in.hasNextLine()) {
 				stratFiles[i] = in.nextLine();
 			}
-			else
+			else {
+				in.close();
 				return false;
+			}
 		}
 		if(gameType) {
 			//NUMBER OF EVOLUTIONS/EVOLUTION TIME (SIMULATION ONLY)
@@ -608,74 +689,105 @@ public class Engine {
 				try {
 					i = Integer.parseInt(in.nextLine());
 				} catch (NumberFormatException e) {
+					in.close();
 					return false;
 				}
-				if(i < 1 || i > 1000)
+				if(i < 1 || i > 1000) {
+					in.close();
 					return false;
+				}
 				else
 					numEvos = i;
 			}
-			else
+			else {
+				in.close();
 				return false;
+			}
 			if(in.hasNextLine()) {
 				try {
 					i = Integer.parseInt(in.nextLine());
 				} catch (NumberFormatException e) {
+					in.close();
 					return false;
 				}
-				if(i < 1 || i > 100)
+				if(i < 1 || i > 100) {
+					in.close();
 					return false;
+				}					
 				else
 					evoTime = i;
 			}
-			else
+			else {
+				in.close();
 				return false;
+			}
 		}
 		else {
 			//TRANSCRIPE/TRACK IMAGE (TESTING ONLY)
 			if(in.hasNextLine()) {
 				switch(in.nextLine()) {
 					case "transcribe":
+						transcribe = true;
 						if(in.hasNextLine()) {
 							String s = in.nextLine();
-							if(Pattern.matches(".*[.].*", s.substring(0)))
+							if(Pattern.matches(".*[.].*", s.substring(0))) {
+								in.close();
 								return false;
+							}
+								
 							else
 								transcript = s;
 						}
-						else
+						else {
+							in.close();
 							return false;
+						}
 						break;
 					case "no transcript":
+						transcribe = false;
 						break;
 					default:
+						in.close();
 						return false;
 				}
 			}
-			else
+			else {
+				in.close();
 				return false;
+			}
+				
 			if(in.hasNextLine()) {
 				switch(in.nextLine()) {
 					case "track image":
+						track = true;
 						if(in.hasNextLine()) {
 							String s = in.nextLine();
-							if(Pattern.matches(".*[.].*", s.substring(0)))
+							if(Pattern.matches(".*[.].*", s.substring(0))) {
+								in.close();
 								return false;
+							}
 							else
 								picture = s;
 						}
-						else
+						else {
+							in.close();
 							return false;
+						}	
 						break;
 					case "no tracking":
+						track = false;
 						break;
 					default:
+						in.close();
 						return false;
 				}
 			}
-			else
+			else {
+				in.close();
 				return false;
+			}
 		}
+		in.close();
 		return true;
 	}
 	
@@ -704,7 +816,7 @@ public class Engine {
 			case "S": return tileID + 100;
 			case "SW": return tileID - 1;
 			case "NW": return tileID + 10;
-			default: throw new Exception("error; not a valid coordinate");
+			default: throw new Exception("error: not a valid coordinate");
 		}
 	}
 	
